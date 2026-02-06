@@ -2,7 +2,7 @@
 
 # socks5-killswitch
 
-**Your IP never leaks. Period.**
+**Blocks all requests if your SOCKS5 proxy fails — no silent fallback.**
 
 [![PyPI](https://img.shields.io/pypi/v/socks5-killswitch?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/socks5-killswitch/)
 [![Python](https://img.shields.io/pypi/pyversions/socks5-killswitch?logo=python&logoColor=white)](https://pypi.org/project/socks5-killswitch/)
@@ -15,7 +15,7 @@
 ---
 
 SOCKS5 proxy session for Python built on `requests.Session`.<br>
-If the proxy drops — all requests are **instantly killed**. No fallback. No leaks.
+If the proxy drops — all requests are **instantly killed**. No silent fallback to your real IP.
 
 </div>
 
@@ -68,7 +68,7 @@ session.check_ip()
 # ❌ ProxyError raised
 # ❌ ALL further requests blocked
 # ❌ No fallback to direct connection
-# ✅ Your real IP stays hidden
+# ✅ Your real IP is not exposed through this session
 ```
 
 ## How It Works
@@ -110,6 +110,25 @@ repr(session)                 # <SafeSession proxy=socks5://user:***@host:1080 k
 ### `ProxyError`
 
 Raised when proxy fails or IP leak is detected. Original exception is chained via `__cause__`.
+
+## Security Model
+
+### What the kill switch covers
+
+- **Proxy failure → instant block** — if any request through the proxy raises an exception, the session is permanently locked. No fallback to a direct connection, ever.
+- **IP verification on startup** — `create_session()` detects your real IP, connects through the proxy, and confirms the proxy IP is different before returning the session.
+- **On-demand leak detection** — `check_ip()` verifies your visible IP hasn't changed. Call it periodically in long-running sessions.
+
+### What is outside the scope
+
+This is **application-level** protection for a single `requests.Session`. It does not cover:
+
+- **DNS queries** — uses `socks5://` by default (local DNS resolution). Your ISP can see which domains you visit. See [#1](https://github.com/ponich/socks5-killswitch/issues/1).
+- **Requests outside `SafeSession`** — a plain `requests.get()` elsewhere in your code goes direct.
+- **Non-HTTP traffic** — WebSocket, UDP, raw sockets are not routed through the proxy.
+- **OS-level enforcement** — other processes and applications are not affected.
+
+For maximum protection, combine this library with a VPN or firewall rules that block non-proxied outbound traffic.
 
 ## Design Decisions
 
