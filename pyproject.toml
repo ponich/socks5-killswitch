@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "socks5-killswitch"
+version = "0.0.1"
+description = "SOCKS5 proxy session with kill switch — if the proxy drops, your real IP is never exposed."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+authors = [{ name = "Mykola" }]
+keywords = ["socks5", "proxy", "killswitch", "privacy", "requests"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: Proxy Servers",
+    "Topic :: Security",
+    "Typing :: Typed",
+]
+dependencies = [
+    "requests>=2.28,<3",
+    "PySocks>=1.7.1,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7,<9",
+    "pytest-cov>=4,<7",
+    "responses>=0.23,<1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "types-requests>=2.28",
+]
+
+[project.urls]
+Homepage = "https://github.com/mykola/socks5-killswitch"
+Issues = "https://github.com/mykola/socks5-killswitch/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/socks5_killswitch"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_return_any = true
+warn_unused_configs = true

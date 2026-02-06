@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Demo: client reads .env itself, passes values to proxy lib."""
 
-import requests
 from pathlib import Path
-from proxy import create_session, ProxyError
+
+from socks5_killswitch import ProxyError, create_session
 
 
 def load_env():
     env = {}
-    for line in (Path(__file__).parent / ".env").read_text().splitlines():
+    for line in (Path(__file__).parent.parent / ".env").read_text().splitlines():
         line = line.strip()
         if not line or line.startswith("#"):
             continue
