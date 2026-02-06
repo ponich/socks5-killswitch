@@ -41,8 +41,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mykola/socks5-killswitch"
-Issues = "https://github.com/mykola/socks5-killswitch/issues"
+Homepage = "https://github.com/ponich/socks5-killswitch"
+Issues = "https://github.com/ponich/socks5-killswitch/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/socks5_killswitch"]

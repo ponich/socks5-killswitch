@@ -7,7 +7,7 @@
 [![PyPI](https://img.shields.io/pypi/v/socks5-killswitch?color=blue&logo=pypi&logoColor=white)](https://pypi.org/project/socks5-killswitch/)
 [![Python](https://img.shields.io/pypi/pyversions/socks5-killswitch?logo=python&logoColor=white)](https://pypi.org/project/socks5-killswitch/)
 [![License](https://img.shields.io/github/license/ponich/socks5-killswitch)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-32%20passed-brightgreen?logo=pytest&logoColor=white)](#)
+[![CI](https://github.com/ponich/socks5-killswitch/actions/workflows/ci.yml/badge.svg)](https://github.com/ponich/socks5-killswitch/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen?logo=codecov&logoColor=white)](#)
 [![Typed](https://img.shields.io/badge/typing-PEP%20561-blue?logo=python&logoColor=white)](#)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000?logo=ruff&logoColor=white)](https://docs.astral.sh/ruff/)
