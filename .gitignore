@@ -10,6 +10,8 @@ dist/
 build/
 *.egg-info/
 src/*.egg-info/
+*.whl
+*.tar.gz
 
 # mypy
 .mypy_cache/
