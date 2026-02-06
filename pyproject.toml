@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "socks5-killswitch"
-version = "0.0.3"
+version = "0.0.4"
 description = "SOCKS5 proxy session with kill switch — blocks all requests if the proxy fails, no silent fallback."
 readme = "README.md"
 license = "MIT"
@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Topic :: Internet :: Proxy Servers",
     "Topic :: Security",
     "Typing :: Typed",
