@@ -14,14 +14,14 @@ TEST_URL = "https://httpbin.org/get"
 
 @pytest.fixture()
 def session() -> SafeSession:
-    """A fresh SafeSession with mocked IPs."""
-    return SafeSession(PROXY_URL, REAL_IP)
+    """A fresh SafeSession with mocked IPs (preflight off for unit tests)."""
+    return SafeSession(PROXY_URL, REAL_IP, preflight=False)
 
 
 @pytest.fixture()
 def killed_session() -> SafeSession:
     """A SafeSession with the kill switch already active."""
-    s = SafeSession(PROXY_URL, REAL_IP)
+    s = SafeSession(PROXY_URL, REAL_IP, preflight=False)
     s._killed = True
     return s
 

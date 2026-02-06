@@ -38,6 +38,7 @@ python3 -m venv .venv
 **SafeSession** extends `requests.Session` with a kill switch:
 - Every request is wrapped: on any `RequestException`, `_killed` is set to `True` and all subsequent requests raise `ProxyError` immediately — no fallback to direct connection.
 - `check_ip()` verifies visible IP != real IP (detected once at session creation via ipify.org). Mismatch triggers kill switch.
+- `check_ip()` does a preflight TCP connect to the proxy before hitting ipify — if the proxy is unreachable, kill switch activates without leaking the real IP to external services. Controlled by `preflight` parameter (default `True`).
 - `check_ip()` calls `super().request()` to bypass the kill switch guard (intentional — it needs to work even in degraded state to detect leaks).
 
 **Client code** (e.g. `examples/get_my_ip.py`) is responsible for loading config from wherever it wants (.env, args, DB) and passing values to the library.

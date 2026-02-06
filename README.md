@@ -79,7 +79,7 @@ session.check_ip()
 | Successful request | Passes through proxy as normal |
 | **Any** request failure | Kill switch activates — `_killed = True`, `ProxyError` raised |
 | Subsequent requests | Instantly raise `ProxyError` — zero network calls |
-| `check_ip()` | Verifies visible IP != real IP (works even after kill switch!) |
+| `check_ip()` | Preflight TCP check → verifies visible IP != real IP (works even after kill switch!) |
 
 ## API
 
@@ -95,6 +95,7 @@ Factory that returns a verified `SafeSession`.
 | `password` | `str` | — | SOCKS5 password |
 | `timeout` | `int` | `15` | Default request timeout (seconds) |
 | `ip_check_url` | `str` | `https://api.ipify.org` | IP detection service URL |
+| `preflight` | `bool` | `True` | TCP-check proxy reachability before IP verification |
 
 ### `SafeSession`
 
@@ -135,6 +136,7 @@ For maximum protection, combine this library with a VPN or firewall rules that b
 - **`socks5://` not `socks5h://`** — DNS is resolved locally (required for PIA and similar providers)
 - **Pure library** — no `.env`, no config files, no side effects. All parameters passed explicitly
 - **`check_ip()` bypasses kill switch** — intentional; leak detection must work even in degraded state
+- **Preflight TCP check** — `check_ip()` verifies proxy is TCP-reachable before hitting ipify, preventing real IP leak to external services
 - **Password masked in `repr()`** — `socks5://user:***@host:1080`, safe for logging
 
 ## License

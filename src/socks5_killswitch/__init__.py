@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import logging
 import re
+import socket
 from typing import Any
 from urllib.parse import urlparse
 
@@ -14,7 +15,7 @@ import requests
 from requests.exceptions import RequestException
 
 __all__ = ["ProxyError", "SafeSession", "create_session"]
-__version__ = "0.0.1"
+__version__ = "0.0.3"
 
 _TIMEOUT = 15
 _IP_CHECK_URL = "https://api.ipify.org"
@@ -38,6 +39,7 @@ class SafeSession(requests.Session):
         real_ip: The machine's real public IP (used for leak detection).
         timeout: Default request timeout in seconds.
         ip_check_url: URL that returns the caller's IP as plain text.
+        preflight: If True, verify proxy is TCP-reachable before IP checks.
     """
 
     def __init__(
@@ -46,6 +48,7 @@ class SafeSession(requests.Session):
         real_ip: str,
         timeout: int = _TIMEOUT,
         ip_check_url: str = _IP_CHECK_URL,
+        preflight: bool = True,
     ) -> None:
         super().__init__()
         self.proxies = {"http": proxy_url, "https": proxy_url}
@@ -54,6 +57,7 @@ class SafeSession(requests.Session):
         self._real_ip = real_ip
         self._killed = False
         self._ip_check_url = ip_check_url
+        self._preflight = preflight
 
     def request(self, method: str | bytes, url: str | bytes, **kwargs: Any) -> requests.Response:  # type: ignore[override]
         """Send a request through the proxy.
@@ -85,6 +89,18 @@ class SafeSession(requests.Session):
         Raises:
             ProxyError: If the real IP is exposed or the check fails.
         """
+        if self._preflight:
+            parsed = urlparse(self._proxy_url)
+            port = parsed.port or 1080
+            try:
+                sock = socket.create_connection(
+                    (parsed.hostname, port), timeout=5,
+                )
+                sock.close()
+            except OSError as e:
+                self._killed = True
+                raise ProxyError(f"Proxy unreachable, kill switch ON: {e}") from e
+
         try:
             visible_ip = (
                 super().request("GET", self._ip_check_url, timeout=10).text.strip()
@@ -118,6 +134,7 @@ def create_session(
     password: str,
     timeout: int = _TIMEOUT,
     ip_check_url: str = _IP_CHECK_URL,
+    preflight: bool = True,
 ) -> SafeSession:
     """Create a safe SOCKS5 session. Verifies the proxy before returning.
 
@@ -128,6 +145,7 @@ def create_session(
         password: SOCKS5 password.
         timeout: Default request timeout in seconds.
         ip_check_url: URL that returns the caller's IP as plain text.
+        preflight: If True, verify proxy is TCP-reachable before IP checks.
 
     Returns:
         A ``SafeSession`` routed through the proxy.
@@ -138,7 +156,7 @@ def create_session(
     proxy_url = f"socks5://{username}:{password}@{host}:{port}"
 
     real_ip = requests.get(ip_check_url, timeout=10).text.strip()
-    session = SafeSession(proxy_url, real_ip, timeout, ip_check_url)
+    session = SafeSession(proxy_url, real_ip, timeout, ip_check_url, preflight)
 
     proxy_ip = session.check_ip()
     logger.info("Proxy OK: %s  (real: %s)", proxy_ip, real_ip)
